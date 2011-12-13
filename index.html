@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="OUTPUT_ENCODING" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title></title>
+		<meta http-equiv="Content-Type" 
+			content="text/html; charset=OUTPUT_ENCODING" />
+            <script type="text/javascript" src="vendor/jquery-1.6.2.min.js"></script>
+            <script type="text/javascript" src="vendor/raphael-min.js"></script>
+            <script type="text/javascript" src="raphael.ohlc.js"></script>
+            <script>
+                var ohlc;
+
+                window.onload = function () {
+                    ohlc = new ohlcPlot({}, "holder", {
+                        'all': [1, 3, 0, 2, 10],
+                        '1really really long and annoying label that is really really annoying': [1.5, 3.5, 0.5, 2.5, 11],
+                        '2really really long and annoying label that is really really annoying': [1.5, 3.5, 0.5, 2.5, 11],
+                        '3really really long and annoying label that is really really annoying': [1.5, 3.5, 0.5, 2.5, 11],
+                        '4really really long and annoying label that is really really annoying': [1.5, 3.5, 0.5, 2.5, 11],
+                        'ting': [10, 10, 5, 6, 12]
+                    });
+                };
+        </script>
+	</head>
+	<body>
+    <div id="holder"></div>
+    <div id="holder2"></div>
+    <div id="loader"></div>
+    <button onclick="testBars($('#dotcount').val())";>Test</button><input id="dotcount" value="5"></input>
+	</body>
+</html>
+
+
