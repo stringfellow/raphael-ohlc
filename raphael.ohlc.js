@@ -4,10 +4,13 @@
     };
 
     ohlcPlot.prototype.defaultHoverInFn = function(elem) {
+        // by default we show a block over it with the data.
         var datum = elem.data('datum'),
             bar = this.config.x_tick_size / 20,
             bb = elem.getBBox(),
             hovWidth = (this.config.x_tick_size / 4) * 3;
+
+        //might need a way to translate these parts, so maybe conf.
         var text = this.r.text(
             bb.x + bar,
             bb.y + (bb.height / 2),
@@ -16,6 +19,7 @@
             "\nMin: " + datum[2] +
             "\nAvg: " + datum[3] +
             "\nTot: " + datum[4]);
+        // add the bits to the element data, so that they can be removed.
         elem.data('hover', [
             this.r.rect(
                 bb.x - (hovWidth / 2) + bar,
@@ -23,13 +27,19 @@
                 hovWidth,
                 bb.height)
             .attr('fill', '#fff')
-            .attr('fill-opacity', 0.7).hover(function(){}, function(){ this.config.hoverOutFn(elem) }, null, this),
+            // the hover box gets the remove function as we instantly hover out
+            // on the bar when the box appears.
+            .attr('fill-opacity', 0.7).hover(
+                function(){},
+                function(){ this.config.hoverOutFn(elem) },
+                null,
+                this),
             text.toFront()
         ]);
     };
     
     ohlcPlot.prototype.defaultHoverOutFn = function(elem) {
-        // provides a default hover function (hide the text)
+        // provides a default hover function (hide the text/box)
         elem.attr('stroke', '#333');
         var bits = elem.data('hover');
         elem.data('hover', []);
@@ -41,7 +51,7 @@
 
     var SIZE = 400;
     ohlcPlot.prototype.default_config = {
-        height: SIZE,  // plot (i.e. plot area) height/width (square!)
+        height: SIZE,  // plot (i.e. plot area) height
         colours: [  // gradient colours
             ['#cfc', 0],
             ['#ffc', 33.3],
@@ -50,9 +60,8 @@
         y_ticks: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
         x_label: "",  // x axis label
         y_label: "Y LABEL",  // y axis label
-//        clickFn: ohlcPlot.prototype.defaultClickFn,  // click a point and...
-        hoverInFn: ohlcPlot.prototype.defaultHoverInFn,  // click a point and...
-        hoverOutFn: ohlcPlot.prototype.defaultHoverOutFn  // click a point and...
+        hoverInFn: ohlcPlot.prototype.defaultHoverInFn,
+        hoverOutFn: ohlcPlot.prototype.defaultHoverOutFn
     };
 
     ohlcPlot.prototype.drawLabels = function(data) {
@@ -69,7 +78,7 @@
             y_label = this.config.y_label,
             self = this;
 
-        // labels
+        // x labels
         var xcount = 0;
         for (var key in data) {
             var label = r.text(
@@ -84,14 +93,16 @@
             label.attr('y',
                 (1.5 * text_width) + height 
             );
+            // resize the plot if needs be.
             if (label.getBBox().y + label.getBBox().height > height + padding + self.getLegendHeight()) {
                 r.setSize(
                     width + (2 * padding),
                     label.getBBox().y + label.getBBox().height);
             }
-
             xcount++;
         }
+
+        // y labels (simple scale)
         for (var yi in y_ticks) {
             r.text(
                 padding - (2 * text_width),
@@ -186,12 +197,11 @@
         var xcount = 0;
         for (var key in data) {
             var datum = data[key];
-            var o = datum[0],
-                h = datum[1],
-                l = datum[2],
-                c = datum[3],
+            var o = datum[0],  // open
+                h = datum[1],  // high
+                l = datum[2],  // low
+                c = datum[3],  // close
                 t = datum[4];
-            var invert_y = y_ticks.length - 1; 
             var xpad = padding + (xcount * x_tick_size) + (x_tick_size / 2) - text_width;
             var path = "" +
                 "M" + (xpad - bar) + "," + (height - y_tick_size * o + text_width) +
@@ -204,6 +214,7 @@
             var ohlcBar = r.path(path).attr('stroke-linecap', 'round').data('datum', datum);
             var bb = ohlcBar.getBBox();
             (function() {
+                // a little closure to keep the right ohlcBar instance.
                 var bar = ohlcBar;
                 r
                 .rect(bb.x, bb.y, bb.width, bb.height)
@@ -217,7 +228,6 @@
                     },
                     function() {
                         bar.attr('stroke-width', 1);
-//                        hoverOutFn.call(self, bar);
                     }
                 );
             })()
@@ -249,7 +259,7 @@
 
         var height = this.config.height;
         var viewPort = document.getElementById(element_id).offsetWidth;
-        var width =  viewPort / 12 * 10;
+        var width =  viewPort / 12 * 10;  // we add on a tenth of the width later
         this.config.width = width;
         //how far apart are the ticks?
         this.config.x_tick_size = width / data_keys.length;
