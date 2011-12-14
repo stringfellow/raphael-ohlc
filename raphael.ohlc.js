@@ -249,7 +249,7 @@
 
         var height = this.config.height;
         var viewPort = document.getElementById(element_id).offsetWidth;
-        var width =  viewPort / 10 * 8;
+        var width =  viewPort / 12 * 10;
         this.config.width = width;
         //how far apart are the ticks?
         this.config.x_tick_size = width / data_keys.length;
